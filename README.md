@@ -1,17 +1,17 @@
-# chat_app
+# Chat App
 
-A new Flutter project.
+A real-time chat application built with Flutter and Firebase.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- User authentication (login, register, password reset)
+- Real-time messaging with Firebase Firestore
+- Add, delete, and rename contacts
+- Dark mode support
+- Bottom navigation (Chats, Profile, Settings)
 
-A few resources to get you started if this is your first Flutter project:
+## Tech Stack
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Flutter
+- Firebase Authentication
+- Cloud Firestore
