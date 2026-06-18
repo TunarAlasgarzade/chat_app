@@ -11,45 +11,61 @@ class ContactOptionsSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        ListTile(
-          leading: const Icon(Icons.edit),
-          title: const Text("Change Name"),
-          onTap: () {
-            _nameController.text = userData["contactName"] ?? "";
-            Navigator.pop(context);
-            showDialog(
-              context: context,
-              builder: (context) => AlertDialog(
-                title: Text("Change contact name"),
-                content: MyTextField(
-                  hintText: "New Name", 
-                  obscureText: false, 
-                  controller: _nameController,
+    return SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ListTile(
+            leading: const Icon(Icons.edit),
+            title: const Text("Change Name"),
+            onTap: () {
+              _nameController.text = userData["contactName"] ?? "";
+              Navigator.pop(context);
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text("Change contact name"),
+                  content: MyTextField(
+                    hintText: "New Name", 
+                    obscureText: false, 
+                    controller: _nameController,
+                  ),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
+                    TextButton(onPressed: () {
+                      if (_nameController.text.trim().isEmpty) return;
+                        _chatService.updateContact(userData["id"], _nameController.text.trim());
+                        Navigator.pop(context);
+                    }, child: const Text("Change name")),
+                  ],
                 ),
-                actions: [
-                  TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancel")),
-                  TextButton(onPressed: () {
-                    if (_nameController.text.trim().isEmpty) return;
-                      _chatService.updateContact(userData["id"], _nameController.text.trim());
+              );
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.delete, color: Colors.red),
+            title: const Text("Delete Contact", style: TextStyle(color: Colors.red)),
+            onTap: () {
+              Navigator.pop(context);
+              showDialog(
+                context: context, 
+                builder: (context) => AlertDialog(
+                  title: Text("Delete concact?"),
+                  content: Text("Are you sure you want to delete the contact?"),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text("No")),
+                    TextButton(onPressed: () async {
                       Navigator.pop(context);
-                  }, child: const Text("Change name")),
-                ],
-              ),
-            );
-          },
-        ),
-        ListTile(
-          leading: const Icon(Icons.delete, color: Colors.red),
-          title: const Text("Delete Contact", style: TextStyle(color: Colors.red)),
-          onTap: () {
-            Navigator.pop(context);
-            _chatService.deleteContact(userData["id"]);
-          },
-        ),
-      ],
+                      _chatService.deleteContact(userData["id"]);
+                      await ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Contact successfully deleted.")));
+                    }, child: const Text("Yes"))
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 }

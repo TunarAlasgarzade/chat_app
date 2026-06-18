@@ -6,15 +6,21 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
+
   // initialize widgets and firebase instance
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+
+  final themeProvider = ThemeProvider();
+  await themeProvider.loadTheme(); 
+
   runApp(
     ChangeNotifierProvider(
-      create: (context) => ThemeProvider(),
+      create: (context) => themeProvider,
       child: const MyApp(),
-  ));
+    )
+  );
 }
 
 class MyApp extends StatelessWidget {
