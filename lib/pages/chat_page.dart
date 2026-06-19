@@ -102,6 +102,8 @@ class _ChatPageState extends State<ChatPage> {
         if (snapshot.hasError) return const Text("Error");
         if (snapshot.connectionState == ConnectionState.waiting) return const Text("Loading..");
 
+        _chatService.markAsRead(widget.receiverID);
+
         return ListView(
           controller: _scrollController,
           children: snapshot.data!.docs.map((doc) => _buildMessageItem(doc)).toList(),
