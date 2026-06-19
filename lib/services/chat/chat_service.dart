@@ -45,7 +45,8 @@ class ChatService {
       senderID: currentUserID, 
       senderEmail: currentUserEmail, 
       receiverID: receiverID, 
-      message: message, 
+      message: message,
+      isRead: false, 
       timestamp: timestamp
     );
 
@@ -148,5 +149,42 @@ class ChatService {
       .collection('Contacts')
       .doc(contactUid)
       .update({'contactName': newName});
+  }
+
+  // delete message
+  Future<void> deleteMessage(String receiverID, String messageID) async {
+    final String currentUserID = _auth.currentUser!.uid;
+  
+    List<String> ids = [currentUserID, receiverID];
+    ids.sort();
+    String chatRoomID = ids.join('_');
+
+    await _firestore
+      .collection("chat_rooms")
+      .doc(chatRoomID)
+      .collection("messages")
+      .doc(messageID)
+      .delete();
+  }
+
+  // mark as read
+  Future<void> markAsRead(String receiverID) async {
+    final String currentUserID = _auth.currentUser!.uid;
+
+    List<String> ids = [currentUserID, receiverID];
+    ids.sort();
+    String chatRoomID = ids.join('_');
+
+    final querySnapshot = await _firestore
+    .collection("chat_rooms")
+    .doc(chatRoomID)
+    .collection("messages")
+    .where("senderID", isEqualTo: receiverID)
+    .where("isRead", isEqualTo: false)
+    .get();
+
+    for (var doc in querySnapshot.docs) {
+      doc.reference.update({'isRead': true});
+    }
   }
 }

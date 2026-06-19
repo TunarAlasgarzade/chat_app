@@ -5,6 +5,7 @@ class Message {
   final String senderEmail;
   final String receiverID;
   final String message;
+  final bool isRead;
   final Timestamp timestamp;
 
   Message({
@@ -12,6 +13,7 @@ class Message {
     required this.senderEmail,
     required this.receiverID,
     required this.message,
+    required this.isRead,
     required this.timestamp,
   });
 
@@ -22,6 +24,7 @@ class Message {
       'senderEmail': senderEmail,
       'receiverID': receiverID,
       'message': message,
+      'isRead' : isRead,
       'timestamp': timestamp,
     };
   }

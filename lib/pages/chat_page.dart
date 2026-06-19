@@ -1,3 +1,4 @@
+import 'package:chat_app/components/message_options_sheet.dart';
 import 'package:intl/intl.dart';
 import 'package:chat_app/components/chat_bubble.dart';
 import 'package:chat_app/components/my_textfield.dart';
@@ -42,6 +43,9 @@ class _ChatPageState extends State<ChatPage> {
 
     // scroll down logic when screen opens
     Future.delayed(const Duration(milliseconds: 500), () => scrollDown());
+
+    // mark as read when screen opens
+    _chatService.markAsRead(widget.receiverID);
   }
 
   @override
@@ -118,21 +122,35 @@ class _ChatPageState extends State<ChatPage> {
     DateTime dateTime = (data['timestamp'] as Timestamp).toDate();
     String formattedTime = DateFormat('HH:mm').format(dateTime);
 
-    return Container(
-      alignment: alignment,
-      child: Column(
-        crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-        children: [
-          ChatBubble(message: data["message"], isCurrentUser: isCurrentUser),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
-            child: Text(
-              formattedTime,
-              style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-            ),
-          )
-        ],
-      )
+    // mark as read
+    bool isRead = data['isRead'] ?? false;
+
+    return GestureDetector(
+      onLongPress: isCurrentUser ? () {
+        showModalBottomSheet(
+          context: context,
+          builder: (context) => MessageOptionsSheet(
+            receiverID: widget.receiverID,
+            messageID: doc.id,
+          ),
+        );
+      } : null,
+      child: Container(
+        alignment: alignment,
+        child: Column(
+          crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+          children: [
+            ChatBubble(message: data["message"], isCurrentUser: isCurrentUser, isRead: isRead,),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+              child: Text(
+                formattedTime,
+                style: TextStyle(fontSize: 10, color: Colors.grey[600]),
+              ),
+            )
+          ],
+        )
+      ),
     );
   }
 
