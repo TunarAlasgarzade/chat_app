@@ -1,15 +1,18 @@
+import 'package:chat_app/components/unread_count.dart';
 import 'package:flutter/material.dart';
 
 class UserTile extends StatelessWidget {
   final String text;
   final void Function()? onTap;
   final void Function()? onMoreTap;
+  final int unreadCount;
 
   const UserTile({
     super.key, 
     required this.text, 
     required this.onTap,
     this.onMoreTap,
+    this.unreadCount = 0,
   });
 
   @override
@@ -34,6 +37,9 @@ class UserTile extends StatelessWidget {
             Text(text),
 
             const Spacer(),
+
+            // unread badge
+            unreadCount > 0 ? UnreadCount(unreadCount: unreadCount) : SizedBox.shrink(),
 
             // more vert
             GestureDetector(

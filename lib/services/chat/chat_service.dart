@@ -187,4 +187,25 @@ class ChatService {
       doc.reference.update({'isRead': true});
     }
   }
+
+  // get unread count stream
+  Stream<int> getUnreadCountStream(String otherUserID) {
+    final String currentUserID = _auth.currentUser!.uid;
+
+    List<String> ids = [currentUserID, otherUserID];
+    ids.sort();
+    String chatRoomID = ids.join('_');
+
+    return _firestore
+        .collection("chat_rooms")
+        .doc(chatRoomID)
+        .collection("messages")
+        .where("senderID", isEqualTo: otherUserID)
+        .where("isRead", isEqualTo: false)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs.length;
+        });
+
+  }
 }

@@ -82,27 +82,31 @@ class _HomePageState extends State<HomePage> {
   }
 
   // build invidual list tile for user 
-  Widget _buildUserListItem(
-    Map<String, dynamic> userData, BuildContext context) {
-    // display all users except current user
+  Widget _buildUserListItem(Map<String, dynamic> userData, BuildContext context) {
     if (userData["email"] != _authService.getCurrentUser()!.email) {
-      return UserTile(
-      text: userData["contactName"] ?? userData["email"],
-      onTap: () {
-        // tapped on a user -> go to chat page
-        Navigator.push(
-          context, 
-          MaterialPageRoute(
-            builder: (context) => ChatPage(
-              receiverEmail: userData["email"],
-              receiverID: userData["id"],
-              receiverName: userData["contactName"] ?? userData["email"],
-            ),
-          )
-        );
-      },
-      onMoreTap: () => _showContactOptions(context, userData),
-    );
+      return StreamBuilder<int>(
+        stream: _chatService.getUnreadCountStream(userData["id"]),
+        builder: (context, snapshot) {
+          int unreadCount = snapshot.data ?? 0;
+          return UserTile(
+            text: userData["contactName"] ?? userData["email"],
+            unreadCount: unreadCount,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ChatPage(
+                    receiverEmail: userData["email"],
+                    receiverID: userData["id"],
+                    receiverName: userData["contactName"] ?? userData["email"],
+                  ),
+                ),
+              );
+            },
+            onMoreTap: () => _showContactOptions(context, userData),
+          );
+        },
+      );
     } else {
       return Container();
     }
