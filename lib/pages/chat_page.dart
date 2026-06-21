@@ -24,6 +24,7 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  int _previousMessageCount = 0;
   final TextEditingController _messageController = TextEditingController();
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
@@ -82,7 +83,13 @@ class _ChatPageState extends State<ChatPage> {
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         title: Text(widget.receiverName),
-        backgroundColor: Theme.of(context).colorScheme.primary
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        actions: [
+          IconButton(
+            icon: Icon(Icons.arrow_downward),
+            onPressed: scrollDown,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -102,7 +109,11 @@ class _ChatPageState extends State<ChatPage> {
         if (snapshot.hasError) return const Text("Error");
         if (snapshot.connectionState == ConnectionState.waiting) return const Text("Loading..");
 
-        _chatService.markAsRead(widget.receiverID);
+        int currentCount = snapshot.data!.docs.length;
+        if (currentCount != _previousMessageCount) {
+          _chatService.markAsRead(widget.receiverID);
+          _previousMessageCount = currentCount;
+        }
 
         return ListView(
           controller: _scrollController,
