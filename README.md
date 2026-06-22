@@ -1,9 +1,7 @@
 # Chat App
-
 A real-time chat application built with Flutter and Firebase.
 
 ## Features
-
 - User authentication (login, register, password reset)
 - Real-time messaging with Firebase Firestore
 - Add, delete, and rename contacts
@@ -13,9 +11,11 @@ A real-time chat application built with Flutter and Firebase.
 - Scroll-to-bottom navigation
 - Dark mode support
 - Bottom navigation (Chats, Profile, Settings)
+- In-app message sound notification
+- Block and unblock contacts
+- Blocked users management (Settings > Blocked Users)
 
 ## Tech Stack
-
 - Flutter
 - Firebase Authentication
 - Cloud Firestore

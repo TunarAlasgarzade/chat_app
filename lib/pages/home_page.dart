@@ -84,26 +84,33 @@ class _HomePageState extends State<HomePage> {
   // build invidual list tile for user 
   Widget _buildUserListItem(Map<String, dynamic> userData, BuildContext context) {
     if (userData["email"] != _authService.getCurrentUser()!.email) {
-      return StreamBuilder<int>(
-        stream: _chatService.getUnreadCountStream(userData["id"]),
-        builder: (context, snapshot) {
-          int unreadCount = snapshot.data ?? 0;
-          return UserTile(
-            text: userData["contactName"] ?? userData["email"],
-            unreadCount: unreadCount,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ChatPage(
-                    receiverEmail: userData["email"],
-                    receiverID: userData["id"],
-                    receiverName: userData["contactName"] ?? userData["email"],
-                  ),
-                ),
+      return StreamBuilder<bool>(
+        stream: _chatService.isUserBlocked(userData["id"]),
+        builder: (context, blockedSnapshot) {
+          bool isBlocked = blockedSnapshot.data ?? false;
+          if (isBlocked) return Container();
+          return StreamBuilder<int>(
+            stream: _chatService.getUnreadCountStream(userData["id"]),
+            builder: (context, snapshot) {
+              int unreadCount = snapshot.data ?? 0;
+              return UserTile(
+                text: userData["contactName"] ?? userData["email"],
+                unreadCount: unreadCount,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatPage(
+                        receiverEmail: userData["email"],
+                        receiverID: userData["id"],
+                        receiverName: userData["contactName"] ?? userData["email"],
+                      ),
+                    ),
+                  );
+                },
+                onMoreTap: () => _showContactOptions(context, userData),
               );
             },
-            onMoreTap: () => _showContactOptions(context, userData),
           );
         },
       );

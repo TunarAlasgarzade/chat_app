@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:chat_app/components/message_options_sheet.dart';
 import 'package:intl/intl.dart';
 import 'package:chat_app/components/chat_bubble.dart';
@@ -24,6 +25,8 @@ class ChatPage extends StatefulWidget {
 }
 
 class _ChatPageState extends State<ChatPage> {
+  bool _isFirstLoad = true;
+  final AudioPlayer _audioPlayer = AudioPlayer();
   int _previousMessageCount = 0;
   final TextEditingController _messageController = TextEditingController();
   final ChatService _chatService = ChatService();
@@ -111,9 +114,20 @@ class _ChatPageState extends State<ChatPage> {
 
         int currentCount = snapshot.data!.docs.length;
         if (currentCount != _previousMessageCount) {
-          _chatService.markAsRead(widget.receiverID);
-          _previousMessageCount = currentCount;
+        _chatService.markAsRead(widget.receiverID);
+        _previousMessageCount = currentCount;
+        
+        if (_isFirstLoad) {
+          _isFirstLoad = false;
+        } else {
+          final lastMessage = snapshot.data!.docs.last;
+          final lastMessageData = lastMessage.data() as Map<String, dynamic>;
+          final String lastSenderID = lastMessageData['senderID'];
+          if (lastSenderID != senderID) {
+            _audioPlayer.play(AssetSource('sounds/message.mp3'));
+          }
         }
+      }
 
         return ListView(
           controller: _scrollController,

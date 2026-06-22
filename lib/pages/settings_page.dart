@@ -2,6 +2,8 @@ import 'package:chat_app/themes/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'blocked_users_page.dart';
+
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
@@ -9,28 +11,58 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Container(
-        decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.secondary,
-          borderRadius: BorderRadius.all(Radius.circular(12))
-        ),
-        margin: const EdgeInsets.all(15),
-        padding:const EdgeInsets.all(16),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // dark mode
-            const Text("Dark Mode"),
-        
-            // switch toggle
-            Switch(
-              value: Provider.of<ThemeProvider>(context, listen: false).isDarkMode, 
-              onChanged: (value) => 
-                Provider.of<ThemeProvider>(context, listen: false)
-                  .toggleTheme()
-            )
-          ],
-        ),
+      body: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.secondary,
+              borderRadius: BorderRadius.all(Radius.circular(12))
+            ),
+            margin: const EdgeInsets.all(15),
+            padding:const EdgeInsets.all(16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                // dark mode
+                const Text("Dark Mode"),
+            
+                // switch toggle
+                Switch(
+                  value: Provider.of<ThemeProvider>(context, listen: false).isDarkMode, 
+                  onChanged: (value) => 
+                    Provider.of<ThemeProvider>(context, listen: false)
+                      .toggleTheme()
+                )
+              ],
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+               Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => BlockedUsersPage()),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.secondary,
+                borderRadius: BorderRadius.all(Radius.circular(12))
+              ),
+              margin: const EdgeInsets.all(15),
+              padding:const EdgeInsets.all(26.8),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // blocked users
+                  const Text("Blocked Users"),
+              
+                  // arrow forward
+                  Icon(Icons.arrow_forward)
+                ],
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

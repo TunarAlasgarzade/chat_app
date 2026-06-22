@@ -43,6 +43,28 @@ class ContactOptionsSheet extends StatelessWidget {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.block, color: Colors.orange),
+            title: const Text("Block Contact", style: TextStyle(color: Colors.orange)),
+            onTap: () {
+              Navigator.pop(context);
+              showDialog(
+                context: context, 
+                builder: (context) => AlertDialog(
+                  title: Text("Block concact?"),
+                  content: Text("Are you sure you want to block the contact? If you block this contact, you can unblock them from Settings > Blocked Users."),
+                  actions: [
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text("No")),
+                    TextButton(onPressed: () async {
+                      Navigator.pop(context);
+                      _chatService.blockUser(userData["id"]);
+                      await ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Contact blocked.")));
+                    }, child: const Text("Yes"))
+                  ],
+                ),
+              );
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.delete, color: Colors.red),
             title: const Text("Delete Contact", style: TextStyle(color: Colors.red)),
             onTap: () {
@@ -57,7 +79,7 @@ class ContactOptionsSheet extends StatelessWidget {
                     TextButton(onPressed: () async {
                       Navigator.pop(context);
                       _chatService.deleteContact(userData["id"]);
-                      await ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Contact successfully deleted.")));
+                      await ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Contact deleted.")));
                     }, child: const Text("Yes"))
                   ],
                 ),

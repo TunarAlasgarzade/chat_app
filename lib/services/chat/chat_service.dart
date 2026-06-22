@@ -33,6 +33,32 @@ class ChatService {
     });
   }
 
+  // get all users stream except blocked users
+  Stream<List<Map<String, dynamic>>> getUsersStreamExcludingBlocked() {
+    final currentUser = _auth.currentUser;
+
+    return _firestore
+        .collection('Users')
+        .doc(currentUser!.uid)
+        .collection('BlockedUsers')
+        .snapshots()
+        .asyncMap((snapshot) async {
+      // get blocked user ids
+      final blockedUserIds = snapshot.docs.map((doc) => doc.id).toList();
+
+      // get all users
+      final usersSnapshot = await _firestore.collection('Users').get();
+
+      // return as stream list, excluding current user and blocked useers
+      return usersSnapshot.docs
+          .where((doc) =>
+              doc.data()['email'] != currentUser.email &&
+              !blockedUserIds.contains(doc.id))
+          .map((doc) => doc.data())
+          .toList();
+    });
+  }
+
   // send message
   Future<void> sendMessage(String receiverID, message) async {
     // get current user info
@@ -121,11 +147,17 @@ class ChatService {
         .doc(currentUid)
         .collection("Contacts")
         .snapshots()
-        .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final contact = doc.data();
-        return contact;
-      }).toList();
+        .asyncMap((snapshot) async {
+          final blockedSnapshot = await _firestore
+        .collection('Users')
+        .doc(currentUid)
+        .collection('BlockedUsers')
+        .get();
+        final blockedIds = blockedSnapshot.docs.map((doc) => doc.id).toList();
+        return snapshot.docs
+        .where((doc) => !blockedIds.contains(doc.id))
+        .map((doc) => doc.data())
+        .toList();
     });
   }
 
@@ -207,5 +239,65 @@ class ChatService {
           return snapshot.docs.length;
         });
 
+  }
+
+  // block user
+  Future<void> blockUser(String userId) async {
+    final currentUser = _auth.currentUser;
+    await _firestore
+        .collection('Users')
+        .doc(currentUser!.uid)
+        .collection('BlockedUsers')
+        .doc(userId)
+        .set({});
+  }
+
+  // unblock user
+  Future<void> unblockUser(String blockedUserId) async {
+    final currentUser = _auth.currentUser;
+
+    await _firestore
+        .collection('Users')
+        .doc(currentUser!.uid)
+        .collection('BlockedUsers')
+        .doc(blockedUserId)
+        .delete();
+  }
+
+  // get blocked users stream
+  Stream<List<Map<String, dynamic>>> getBlockedUsersStream(String userId) {
+    return _firestore
+        .collection('Users')
+        .doc(userId)
+        .collection('BlockedUsers')
+        .snapshots()
+        .asyncMap((snapshot) async {
+      // get list of blocked user ids
+      final blockedUserIds = snapshot.docs.map((doc) => doc.id).toList();
+
+      final userDocs = await Future.wait(
+        blockedUserIds
+            .map((id) => _firestore.collection('Users').doc(id).get()),
+      );
+
+      // return as a list
+      return userDocs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        data['id'] = doc.id;
+        return data;
+      }).toList();
+    });
+  }
+
+  // is user blocked
+  Stream<bool> isUserBlocked(String userID) {
+    final currentUID = _auth.currentUser!.uid;
+    return _firestore
+        .collection('Users')
+        .doc(currentUID)
+        .collection('BlockedUsers')
+        .doc(userID)
+        .snapshots()
+        .map((doc) => doc.exists);
   }
 }
