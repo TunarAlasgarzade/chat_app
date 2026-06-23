@@ -18,7 +18,7 @@ class SettingsPage extends StatelessWidget {
               color: Theme.of(context).colorScheme.secondary,
               borderRadius: BorderRadius.all(Radius.circular(12))
             ),
-            margin: const EdgeInsets.all(15),
+            margin: const EdgeInsets.only(right: 15, left: 15, top: 15),
             padding:const EdgeInsets.all(16),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -48,8 +48,8 @@ class SettingsPage extends StatelessWidget {
                 color: Theme.of(context).colorScheme.secondary,
                 borderRadius: BorderRadius.all(Radius.circular(12))
               ),
-              margin: const EdgeInsets.all(15),
-              padding:const EdgeInsets.all(26.8),
+              margin: const EdgeInsets.only(right: 15, left: 15, top: 15),
+              padding:const EdgeInsets.all(27.6),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

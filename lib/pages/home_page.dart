@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
 
   final AuthService _authService = AuthService();
 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -39,7 +40,7 @@ class _HomePageState extends State<HomePage> {
       body: _selectedIndex == 0 
       ? _buildUserList() 
       : _selectedIndex == 1 
-        ? const ProfilePage() 
+        ? ProfilePage() 
         : const SettingsPage(),
       bottomNavigationBar: MyBottomNav(
       currentIndex: _selectedIndex,

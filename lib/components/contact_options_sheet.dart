@@ -50,14 +50,14 @@ class ContactOptionsSheet extends StatelessWidget {
               showDialog(
                 context: context, 
                 builder: (context) => AlertDialog(
-                  title: Text("Block concact?"),
+                  title: Text("Block contact?"),
                   content: Text("Are you sure you want to block the contact? If you block this contact, you can unblock them from Settings > Blocked Users."),
                   actions: [
                     TextButton(onPressed: () => Navigator.pop(context), child: const Text("No")),
                     TextButton(onPressed: () async {
                       Navigator.pop(context);
                       _chatService.blockUser(userData["id"]);
-                      await ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Contact blocked.")));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Contact blocked.")));
                     }, child: const Text("Yes"))
                   ],
                 ),
@@ -72,14 +72,14 @@ class ContactOptionsSheet extends StatelessWidget {
               showDialog(
                 context: context, 
                 builder: (context) => AlertDialog(
-                  title: Text("Delete concact?"),
+                  title: Text("Delete contact?"),
                   content: Text("Are you sure you want to delete the contact?"),
                   actions: [
                     TextButton(onPressed: () => Navigator.pop(context), child: const Text("No")),
                     TextButton(onPressed: () async {
                       Navigator.pop(context);
                       _chatService.deleteContact(userData["id"]);
-                      await ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Contact deleted.")));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Contact deleted.")));
                     }, child: const Text("Yes"))
                   ],
                 ),

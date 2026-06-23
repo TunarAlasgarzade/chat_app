@@ -1,13 +1,23 @@
+import 'package:chat_app/components/my_textfield.dart';
 import 'package:chat_app/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({super.key});
+  final TextEditingController _passwordController = TextEditingController();
+  ProfilePage({super.key});
 
+  // log out
   void logout() {
     // get auth service
     final auth = AuthService();
     auth.signOut();
+  }
+
+  // delete account
+  void deleteAccount(password) {
+    // get auth service
+    final auth = AuthService();
+    auth.deleteAccount(password);
   }
 
   // reset pw
@@ -43,10 +53,10 @@ class ProfilePage extends StatelessWidget {
             )
           ),
         ),
-
+       
         // logout ListTile
         ListTile(
-          title: const Text("L O G O U T", style: TextStyle(color: Color.fromARGB(255, 255, 17, 0)),),
+          title: const Text("Logout", style: TextStyle(color: Color.fromARGB(255, 255, 17, 0), fontWeight: FontWeight.bold),),
           leading: Icon(Icons.logout, color: const Color.fromARGB(255, 255, 17, 0),),
           onTap: () => showDialog(
             context: context, 
@@ -56,6 +66,34 @@ class ProfilePage extends StatelessWidget {
               actions: [
                 TextButton(onPressed: () {Navigator.pop(context);}, child: Text("No")),
                 TextButton(onPressed: () {Navigator.pop(context); logout();}, child: Text("Yes")),
+              ],
+            ),
+          ),
+        ),
+
+        // delete account ListTile
+        ListTile(
+          title: const Text("Delete Account", style: TextStyle(color: Color.fromARGB(255, 255, 17, 0), fontWeight: FontWeight.bold),),
+          leading: Icon(Icons.delete_forever, color: const Color.fromARGB(255, 255, 17, 0),),
+          onTap: () => showDialog(
+            context: context, 
+            builder: (context) => AlertDialog(
+              title: const Text("Delete Account"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text("Are you sure you want to delete your account? To delete your account, confirm your account password."),
+                  SizedBox(height: 20),
+                  MyTextField(
+                    hintText: "Enter your password", 
+                    obscureText: true, 
+                    controller: _passwordController
+                  )
+                ],
+              ),
+              actions: [
+                TextButton(onPressed: () {Navigator.pop(context);}, child: Text("Cancel")),
+                TextButton(onPressed: () {Navigator.pop(context); deleteAccount(_passwordController.text);}, child: Text("Confirm")),
               ],
             ),
           ),

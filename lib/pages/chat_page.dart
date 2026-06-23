@@ -85,7 +85,23 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: Text(widget.receiverName),
+        title: StreamBuilder<bool>(
+          stream: _chatService.isAccountDeleted(widget.receiverID),
+          builder: (context, snapshot) {
+            bool isDeleted = snapshot.data ?? false;
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.receiverName),
+                if (isDeleted)
+                  const Text(
+                    "This account has been deleted",
+                    style: TextStyle(fontSize: 12),
+                  ),
+              ],
+            );
+          },
+        ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           IconButton(

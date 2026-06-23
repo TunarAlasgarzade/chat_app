@@ -72,4 +72,16 @@ class AuthService {
     }
   }
 
+  // delete account
+  Future<void> deleteAccount(String password) async {
+    final user = _auth.currentUser!;
+    final credential = EmailAuthProvider.credential(
+      email: user.email!,
+      password: password,
+    );
+    await user.reauthenticateWithCredential(credential);
+    final String uid = user.uid;
+    await _firestore.collection('Users').doc(uid).update({'isDeleted': true});
+    await user.delete();
+  }
 }

@@ -33,7 +33,7 @@ class MessageOptionsSheet extends StatelessWidget {
                     TextButton(onPressed: () async {
                       Navigator.pop(context);
                       _chatService.deleteMessage(receiverID, messageID);
-                      await ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Message deleted.")));
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Message deleted.")));
                     }, child: const Text("Yes"))
                   ],
                 ),

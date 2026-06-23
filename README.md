@@ -14,6 +14,8 @@ A real-time chat application built with Flutter and Firebase.
 - In-app message sound notification
 - Block and unblock contacts
 - Blocked users management (Settings > Blocked Users)
+- Account deletion with re-authentication
+- Deleted account indicator in chat
 
 ## Tech Stack
 - Flutter

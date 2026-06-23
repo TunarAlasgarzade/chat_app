@@ -300,4 +300,13 @@ class ChatService {
         .snapshots()
         .map((doc) => doc.exists);
   }
+
+  // is account deleted
+  Stream<bool> isAccountDeleted(String userID) {
+    return _firestore
+        .collection('Users')
+        .doc(userID)
+        .snapshots()
+        .map((doc) => doc.data()?['isDeleted'] ?? false);
+  }
 }
