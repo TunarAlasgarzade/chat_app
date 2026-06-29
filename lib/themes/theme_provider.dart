@@ -4,36 +4,34 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  ThemeData _themeData = lightMode;
+  bool _isDarkMode = false;
+  Color _color = Colors.green;
 
-  ThemeData get themeData => _themeData;
-
-  bool get isDarkMode => _themeData == darkMode;
+  ThemeData get themeData => _isDarkMode ? darkMode(_color) : lightMode(_color);
+  bool get isDarkMode => _isDarkMode;
+  Color get color => _color;
 
   Future<void> loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    final isDark = prefs.getBool("isDarkMode");
-
-    if (isDark == true) {
-      _themeData = darkMode;
-    } else {
-      _themeData = lightMode;
+    _isDarkMode = prefs.getBool("isDarkMode") ?? false;
+    final savedColor = prefs.getInt("accentColor");
+    if (savedColor != null) {
+      _color = Color(savedColor);
     }
-    notifyListeners();
-  }
-
-  set themeData(ThemeData themeData) {
-    _themeData = themeData; 
     notifyListeners();
   }
 
   void toggleTheme() async {
     final prefs = await SharedPreferences.getInstance();
-    if (_themeData == lightMode) {
-      themeData = darkMode;
-    } else {
-      themeData = lightMode;
-    }
-    prefs.setBool("isDarkMode", isDarkMode);
+    _isDarkMode = !_isDarkMode;
+    prefs.setBool("isDarkMode", _isDarkMode);
+    notifyListeners();
+  }
+
+  void changeColor(Color newColor) async {
+    final prefs = await SharedPreferences.getInstance();
+    _color = newColor;
+    prefs.setInt("accentColor", newColor.toARGB32());
+    notifyListeners();
   }
 }

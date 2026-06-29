@@ -9,7 +9,9 @@ A real-time chat application built with Flutter and Firebase.
 - Read receipts (sent/read indicators)
 - Unread message count badge
 - Scroll-to-bottom navigation
-- Dark mode support
+- Dark/Light mode toggle
+- Accent color selection (7 colors)
+- Appearance settings (Settings > Appearance)
 - Bottom navigation (Chats, Profile, Settings)
 - In-app message sound notification
 - Block and unblock contacts
