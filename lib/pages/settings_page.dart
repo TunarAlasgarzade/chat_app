@@ -1,7 +1,5 @@
 import 'package:chat_app/pages/appearance_page.dart';
-import 'package:chat_app/themes/theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
 import 'blocked_users_page.dart';
 
