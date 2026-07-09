@@ -3,6 +3,7 @@ import 'package:chat_app/themes/theme_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -10,6 +11,8 @@ void main() async {
   // initialize widgets and firebase instance
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  OneSignal.initialize("a997156d-ad5a-4d14-af7c-ba1cdc9b2da9");
+  OneSignal.Notifications.requestPermission(true);
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
 
   final themeProvider = ThemeProvider();

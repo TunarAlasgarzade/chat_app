@@ -1,3 +1,5 @@
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:chat_app/models/message.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -49,7 +51,7 @@ class ChatService {
       // get all users
       final usersSnapshot = await _firestore.collection('Users').get();
 
-      // return as stream list, excluding current user and blocked useers
+      // return as stream list, excluding current user and blocked users
       return usersSnapshot.docs
           .where((doc) =>
               doc.data()['email'] != currentUser.email &&
@@ -81,12 +83,67 @@ class ChatService {
     ids.sort(); // sort the ids (this ensure the chatroomID is the same for any 2 people)
     String chatRoomID = ids.join('_');
 
-    // add new message to datebase
+    // add new message to database
     await _firestore
         .collection("chat_rooms")
         .doc(chatRoomID)
         .collection("messages")
         .add(newMessage.toMap());
+
+    // send notification in background (without awaiting)
+    _sendNotification(receiverID, currentUserID, currentUserEmail, message);
+  }
+
+  // send push notification in background
+  Future<void> _sendNotification(String receiverID, String currentUserID, String currentUserEmail, String message) async {
+    try {
+      // check if receiver blocked the sender
+      final blockedDoc = await _firestore
+          .collection('Users')
+          .doc(receiverID)
+          .collection('BlockedUsers')
+          .doc(currentUserID)
+          .get();
+
+      if (blockedDoc.exists) return;
+      // get receiver's oneSignalId
+      final doc = await _firestore.collection("Users").doc(receiverID).get();
+      final data = doc.data();
+      final receiverOneSignalId = data?['oneSignalId'];
+      final isOnline = data?['isOnline'] ?? false;
+
+      if (isOnline) return;
+
+      // get firebase id token
+      final idToken = await _auth.currentUser!.getIdToken();
+
+      // get sender name from receiver's contacts
+      final contactDoc = await _firestore
+          .collection("Users")
+          .doc(receiverID)
+          .collection("Contacts")
+          .doc(currentUserID)
+          .get();
+      final senderName = contactDoc.data()?['contactName'] ?? currentUserEmail;
+
+      // send notification via cloudflare worker
+      if (receiverOneSignalId != null) {
+        http.post(
+          Uri.parse("https://chat-app.t-alasgarzade.workers.dev"),
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer $idToken",
+          },
+          body: jsonEncode({
+            "oneSignalId": receiverOneSignalId,
+            "senderName": senderName,
+            "message": message,
+          }),
+        );
+      }
+    } catch (e) {
+      // if notification fails, message is not affected
+    }
   }
 
   // get messages
@@ -238,7 +295,6 @@ class ChatService {
         .map((snapshot) {
           return snapshot.docs.length;
         });
-
   }
 
   // block user

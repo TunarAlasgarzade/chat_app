@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:chat_app/components/add_contact_dialog.dart';
 import 'package:chat_app/components/contact_options_sheet.dart';
 import 'package:chat_app/components/my_bottomnav.dart';
@@ -22,6 +24,28 @@ class _HomePageState extends State<HomePage> {
   final ChatService _chatService = ChatService();
 
   final AuthService _authService = AuthService();
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  @override
+  void initState() {
+    super.initState();
+    _setOnlineStatus(true);
+  }
+
+  @override
+  void dispose() {
+    _setOnlineStatus(false);
+    super.dispose();
+  }
+
+  Future<void> _setOnlineStatus(bool isOnline) async {
+    final uid = _auth.currentUser?.uid;
+    if (uid != null) {
+      await _firestore.collection('Users').doc(uid).update({'isOnline': isOnline});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 
 class AuthService {
   // instance of auth & firestore
@@ -20,11 +21,14 @@ class AuthService {
         password: password
       );
 
+      final oneSignalId = await OneSignal.User.getOnesignalId();
+
       // save user info if doesn't already exist
       _firestore.collection("Users").doc(userCredential.user!.uid).set(
         {
           'uid': userCredential.user!.uid, 
           'email':email,
+          'oneSignalId': oneSignalId,
         },
       );
 
@@ -44,11 +48,14 @@ class AuthService {
         password: password
       );
 
+      final oneSignalId = await OneSignal.User.getOnesignalId();
+
       // save user info in a separate doc
       _firestore.collection("Users").doc(userCredential.user!.uid).set(
         {
           'uid': userCredential.user!.uid, 
           'email':email,
+          'oneSignalId': oneSignalId,
         },
       );
 
