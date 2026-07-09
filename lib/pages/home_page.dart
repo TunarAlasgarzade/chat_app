@@ -18,7 +18,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> 
+  with WidgetsBindingObserver {
   int _selectedIndex = 0;
   // chat & auth service
   final ChatService _chatService = ChatService();
@@ -31,15 +32,33 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _setOnlineStatus(true);
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _setOnlineStatus(false);
     super.dispose();
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        _setOnlineStatus(true);
+        break;
+
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+        _setOnlineStatus(false);
+        break;
+
+      default:
+        break;
+    }
+  }
   Future<void> _setOnlineStatus(bool isOnline) async {
     final uid = _auth.currentUser?.uid;
     if (uid != null) {
