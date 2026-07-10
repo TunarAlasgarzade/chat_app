@@ -44,15 +44,15 @@ class ProfilePage extends StatelessWidget {
           subtitle: Text(userEmail),
           leading: const Icon(Icons.email_outlined),
           trailing: IconButton(
+            icon: const Icon(Icons.copy, size: 22),
             onPressed: () {
               Clipboard.setData(ClipboardData(text: userEmail));
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
+                const SnackBar(
                   content: Text("Email copied!")
                 )
               );
             }, 
-            icon: Icon(Icons.copy),
           ),
         ),
 
