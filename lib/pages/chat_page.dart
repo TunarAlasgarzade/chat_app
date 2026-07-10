@@ -45,9 +45,6 @@ class _ChatPageState extends State<ChatPage> {
       }
     });
 
-    // scroll down logic when screen opens
-    Future.delayed(const Duration(milliseconds: 500), () => scrollDown());
-
     // mark as read when screen opens
     _chatService.markAsRead(widget.receiverID);
   }
@@ -64,9 +61,18 @@ class _ChatPageState extends State<ChatPage> {
   void scrollDown() {
     if (_scrollController.hasClients) {
       _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent, 
-        duration: const Duration(seconds: 1), 
-        curve: Curves.fastLinearToSlowEaseIn,
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  }
+
+  // jump to the bottom without animation
+  void jumpToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.jumpTo(
+        _scrollController.position.maxScrollExtent,
       );
     }
   }
@@ -143,20 +149,29 @@ class _ChatPageState extends State<ChatPage> {
 
         int currentCount = snapshot.data!.docs.length;
         if (currentCount != _previousMessageCount) {
-        _chatService.markAsRead(widget.receiverID);
-        _previousMessageCount = currentCount;
-        
-        if (_isFirstLoad) {
-          _isFirstLoad = false;
-        } else {
-          final lastMessage = snapshot.data!.docs.last;
-          final lastMessageData = lastMessage.data() as Map<String, dynamic>;
-          final String lastSenderID = lastMessageData['senderID'];
-          if (lastSenderID != senderID) {
-            _audioPlayer.play(AssetSource('sounds/message.mp3'));
+          _chatService.markAsRead(widget.receiverID);
+          _previousMessageCount = currentCount;
+
+          if (_isFirstLoad) {
+            _isFirstLoad = false;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              jumpToBottom();
+            });
+          } else {
+            final lastMessage = snapshot.data!.docs.last;
+            final lastMessageData =
+                lastMessage.data() as Map<String, dynamic>;
+            final String lastSenderID = lastMessageData['senderID'];
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              scrollDown();
+            });
+            if (lastSenderID != senderID) {
+              _audioPlayer.play(
+                AssetSource('sounds/message.mp3'),
+              );
+            }
           }
         }
-      }
 
         return ListView(
           controller: _scrollController,
