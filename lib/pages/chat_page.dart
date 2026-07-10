@@ -85,10 +85,18 @@ class _ChatPageState extends State<ChatPage> {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        title: StreamBuilder<bool>(
-          stream: _chatService.isAccountDeleted(widget.receiverID),
+        title: StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('Users')
+              .doc(widget.receiverID)
+              .snapshots(),
           builder: (context, snapshot) {
-            bool isDeleted = snapshot.data ?? false;
+            if (!snapshot.hasData) {
+              return Text(widget.receiverName);
+            }
+            final data = snapshot.data!.data() as Map<String, dynamic>;
+            final bool isDeleted = data['isDeleted'] ?? false;
+            final bool isOnline = data['isOnline'] ?? false;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -97,6 +105,11 @@ class _ChatPageState extends State<ChatPage> {
                   const Text(
                     "This account has been deleted",
                     style: TextStyle(fontSize: 12),
+                  )
+                else
+                  Text(
+                    isOnline ? "online" : "offline",
+                    style: const TextStyle(fontSize: 12),
                   ),
               ],
             );

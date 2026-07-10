@@ -18,7 +18,9 @@ A real-time chat application built with Flutter and Firebase.
 - Blocked users management (Settings > Blocked Users)
 - Account deletion with re-authentication
 - Deleted account indicator in chat
+- Online/offline status indicator
 - Push notifications via OneSignal (messages received when app is closed)
+- Automatic OneSignal ID synchronization
 - Notifications suppressed when app is open or user is blocked
 
 ## Tech Stack

@@ -1,3 +1,4 @@
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:chat_app/components/add_contact_dialog.dart';
@@ -34,6 +35,7 @@ class _HomePageState extends State<HomePage>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     _setOnlineStatus(true);
+    _updateOneSignalId();
   }
 
   @override
@@ -48,6 +50,7 @@ class _HomePageState extends State<HomePage>
     switch (state) {
       case AppLifecycleState.resumed:
         _setOnlineStatus(true);
+        _updateOneSignalId();
         break;
 
       case AppLifecycleState.paused:
@@ -64,6 +67,15 @@ class _HomePageState extends State<HomePage>
     if (uid != null) {
       await _firestore.collection('Users').doc(uid).update({'isOnline': isOnline});
     }
+  }
+  Future<void> _updateOneSignalId() async {
+    final uid = _auth.currentUser?.uid;
+    if (uid == null) return;
+    final oneSignalId = await OneSignal.User.getOnesignalId();
+    if (oneSignalId == null) return;
+    await _firestore.collection('Users').doc(uid).update({
+      'oneSignalId': oneSignalId,
+    });
   }
 
   @override
