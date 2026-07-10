@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:chat_app/components/my_textfield.dart';
 import 'package:chat_app/services/auth/auth_service.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ class ProfilePage extends StatelessWidget {
   }
 
   // delete account
-  void deleteAccount(password) {
+  void deleteAccount(String password) {
     // get auth service
     final auth = AuthService();
     auth.deleteAccount(password);
@@ -33,14 +34,32 @@ class ProfilePage extends StatelessWidget {
     // get user email
 
     final AuthService authService = AuthService();
-    final String? userEmail = authService.getCurrentUser()?.email;
+    final String userEmail = authService.getCurrentUser()!.email!;
 
     return Column(
       children: [
+        // user email ListTile
+        ListTile(
+          title: const Text("Email"),
+          subtitle: Text(userEmail),
+          leading: const Icon(Icons.email_outlined),
+          trailing: IconButton(
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: userEmail));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text("Email copied!")
+                )
+              );
+            }, 
+            icon: Icon(Icons.copy),
+          ),
+        ),
+
         // reset pw ListTile
         ListTile(
-          title: Text("Reset Password",),
-          leading: Icon(Icons.lock_reset,),
+          title: const Text("Reset Password",),
+          leading: const Icon(Icons.lock_reset,),
           onTap: () => showDialog(
             context: context, 
             builder: (context) => AlertDialog(
@@ -83,7 +102,7 @@ class ProfilePage extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text("Are you sure you want to delete your account? To delete your account, confirm your account password."),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   MyTextField(
                     hintText: "Enter your password", 
                     obscureText: true, 
