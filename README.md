@@ -1,30 +1,48 @@
 # Chat App
-A real-time chat application built with Flutter and Firebase.
+
+A modern real-time chat application built with Flutter and Firebase.
 
 ## Features
+
+### Authentication
 - User authentication (login, register, password reset)
+- Account deletion with re-authentication
+
+### Messaging
 - Real-time messaging with Firebase Firestore
-- Add, delete, and rename contacts
 - Message deletion
 - Read receipts (sent/read indicators)
 - Unread message count badge
 - Scroll-to-bottom navigation
-- Dark/Light mode toggle
-- Accent color selection (7 colors)
-- Appearance settings (Settings > Appearance)
-- Bottom navigation (Chats, Profile, Settings)
-- In-app message sound notification
+- In-app message sound notifications
+
+### Presence & Activity
+- Online/offline status indicator
+- Real-time typing indicator
+- Deleted account indicator in chat
+
+### Contacts
+- Add, delete, and rename contacts
 - Block and unblock contacts
 - Blocked users management (Settings > Blocked Users)
-- Account deletion with re-authentication
-- Deleted account indicator in chat
-- Online/offline status indicator
-- Push notifications via OneSignal (messages received when app is closed)
+
+### Notifications
+- Push notifications via OneSignal
 - Automatic OneSignal ID synchronization
-- Notifications suppressed when app is open or user is blocked
+- Notifications suppressed when the app is open
+- Notifications suppressed when the user is blocked
+- Cloudflare Worker used as a secure notification backend
+
+### Customization
+- Dark/Light mode toggle
+- Accent color selection (7 colors)
+- Appearance settings
+- Bottom navigation (Chats, Profile, Settings)
 
 ## Tech Stack
+
 - Flutter
+- Dart
 - Firebase Authentication
 - Cloud Firestore
 - OneSignal

@@ -277,6 +277,45 @@ class ChatService {
     }
   }
 
+  // typing status
+  Future<void> startTyping(String receiverID) async {
+    final currentUserID = _auth.currentUser!.uid;
+
+    await _firestore
+        .collection("Users")
+        .doc(currentUserID)
+        .update({
+      "isTypingTo": receiverID,
+    });
+  }
+
+  // clear typing status
+  Future<void> stopTyping() async {
+    final currentUserID = _auth.currentUser!.uid;
+
+    await _firestore
+        .collection("Users")
+        .doc(currentUserID)
+        .update({
+      "isTypingTo": null,
+    });
+  }
+
+  // typing stream
+  Stream<bool> isTypingStream(String userID) {
+    final currentUserID = _auth.currentUser!.uid;
+
+    return _firestore
+      .collection('Users')
+      .doc(userID)
+      .snapshots()
+      .map((doc) {
+        final data = doc.data();
+
+        return data?['isTypingTo'] == currentUserID;
+      });
+  }
+
   // get unread count stream
   Stream<int> getUnreadCountStream(String otherUserID) {
     final String currentUserID = _auth.currentUser!.uid;

@@ -5,6 +5,7 @@ class MyTextField extends StatelessWidget {
   final bool obscureText;
   final TextEditingController controller;
   final FocusNode? focusNode;
+  final void Function(String)? onChanged;
 
   const MyTextField({
     super.key, 
@@ -12,6 +13,7 @@ class MyTextField extends StatelessWidget {
     required this.obscureText,
     required this.controller,
     this.focusNode,
+    this.onChanged,
   });
 
   @override
@@ -22,6 +24,7 @@ class MyTextField extends StatelessWidget {
         obscureText: obscureText,
         controller: controller,
         focusNode: focusNode,
+        onChanged: onChanged,
 
         minLines: 1,
         maxLines: obscureText ? 1 : 6,

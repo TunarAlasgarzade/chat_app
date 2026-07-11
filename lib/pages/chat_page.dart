@@ -33,6 +33,7 @@ class _ChatPageState extends State<ChatPage> {
   final AuthService _authService = AuthService();
   FocusNode myFocusNode = FocusNode();
   final ScrollController _scrollController = ScrollController();
+  bool _isTyping = false;
 
   @override
   void initState() {
@@ -51,6 +52,7 @@ class _ChatPageState extends State<ChatPage> {
 
   @override
   void dispose() {
+    _chatService.stopTyping();
     myFocusNode.dispose();
     _messageController.dispose();
     _scrollController.dispose();
@@ -82,6 +84,8 @@ class _ChatPageState extends State<ChatPage> {
     if (_messageController.text.trim().isNotEmpty) {
       await _chatService.sendMessage(widget.receiverID, _messageController.text);
       _messageController.clear();
+      _isTyping = false;
+      await _chatService.stopTyping();
     }
     scrollDown();
   }
@@ -113,9 +117,17 @@ class _ChatPageState extends State<ChatPage> {
                     style: TextStyle(fontSize: 12),
                   )
                 else
-                  Text(
-                    isOnline ? "online" : "offline",
-                    style: const TextStyle(fontSize: 12),
+                  StreamBuilder<bool>(
+                    stream: _chatService.isTypingStream(widget.receiverID),
+                    builder: (context, typingSnapshot) {
+                      final isTyping = typingSnapshot.data ?? false;
+                      return Text(
+                        isTyping
+                            ? "${widget.receiverName} is typing..."
+                            : (isOnline ? "online" : "offline"),
+                        style: const TextStyle(fontSize: 12),
+                      );
+                    },
                   ),
               ],
             );
@@ -240,6 +252,16 @@ class _ChatPageState extends State<ChatPage> {
               obscureText: false, 
               controller: _messageController,
               focusNode: myFocusNode,
+              onChanged: (value) async {
+              if (value.isNotEmpty && !_isTyping) {
+                _isTyping = true;
+                await _chatService.startTyping(widget.receiverID);
+              }
+              if (value.isEmpty && _isTyping) {
+                _isTyping = false;
+                await _chatService.stopTyping();
+              }
+            },
             ),
           ),
           Container(
